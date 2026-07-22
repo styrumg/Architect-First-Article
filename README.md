@@ -1,4 +1,3 @@
-[README.md](https://github.com/user-attachments/files/30269692/README.md)
 # Tell Your Coding Agent to Work as an Architect First
 
 **Let it declare intent, let it show the design, let both pass the gates — then, and only then, let it code.**
@@ -30,7 +29,7 @@ Code-level checking is mature (SAST tools exist for every ecosystem). Checking a
 ## What's in this repo
 
 | File | What it is |
-|------|------------|
+| --- | --- |
 | `Tell-Your-Coding-Agent-to-Work-as-an-Architect-First.pdf` | The full paper (20 pp) |
 
 ## Status and honest limits
@@ -56,7 +55,7 @@ The paper ends with an explicit limits section: what the gates cannot see, where
             Let it declare intent, let it show the design,
             let both pass the gates — then, and only then, let it code},
   year   = {2026},
-  howpublished = {\url{https://github.com/<your-handle>/<repo-name>}}
+  howpublished = {\url{https://github.com/styrumg/Architect-First-Article}}
 }
 ```
 
