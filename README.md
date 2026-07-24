@@ -30,7 +30,7 @@ Code-level checking is mature (SAST tools exist for every ecosystem). Checking a
 
 | File | What it is |
 | --- | --- |
-| `Tell-Your-Coding-Agent-to-Work-as-an-Architect-First.pdf` | The full paper (20 pp) |
+| `Tell-Your-Coding-Agent-to-Work-as-an-Architect-First.pdf` | The full paper
 | `Architect-First-2pager.pdf` | The two-page summary — the whole argument in plain language |
 
 New here? Read the two-pager first; the full paper is the detailed version of the same argument.
