@@ -1,0 +1,7 @@
+{"decision": "queue delivery semantics", "value": "at-least-once", "authority": "agent default", "status": "accepted for example", "after": "Gate 1 finding H3a"}
+{"decision": "restart cap", "value": "5 per minute, then escalate", "authority": "agent default", "status": "accepted for example", "after": "Gate 1 finding H4"}
+{"decision": "shutdown during active charge", "value": "drain before stop", "authority": "example author", "status": "accepted for example"}
+{"decision": "no-double-charge mechanism", "value": "gateway-enforced idempotency key, with durable local order state", "authority": "example author", "status": "accepted for example", "after": "design review of H3/H8"}
+{"decision": "payment gateway idempotency contract", "value": "rely on vendor-documented idempotency-key contract; compensating control = version pin (2.4.1) + contract test + monitoring", "authority": "example author", "status": "accepted for example", "after": "Gate 1 finding H14"}
+{"decision": "drain-timeout policy on shutdown", "value": "drain up to 5s, then force-stop and park the in-flight charge for reconciliation", "authority": "example author", "status": "accepted for example", "after": "code review"}
+{"decision": "gateway contract test / version pin", "value": "required deployment controls, not implemented in this illustrative repository", "authority": "example author", "status": "declared, not demonstrated"}

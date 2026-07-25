@@ -1,0 +1,54 @@
+{
+  "source": "worked-example/payment-worker",
+  "domain": "generic",
+  "summary": {
+    "blocking": 1,
+    "high": 2,
+    "medium": 1,
+    "low": 1,
+    "strengths": 0,
+    "verdict": "BLOCK \u2014 resolve blocking findings before proceeding"
+  },
+  "findings": [
+    {
+      "heuristic": "H3a",
+      "severity": "blocking",
+      "finding": "'ChargePayment' is at-most-once with no ack",
+      "evidence": "worker\u2192payment_gateway",
+      "question": "Is silent loss of 'ChargePayment' tolerable?"
+    },
+    {
+      "heuristic": "H4",
+      "severity": "high",
+      "finding": "supervision present but no restart-loop bound / backoff / escalation",
+      "evidence": "supervision hierarchy w/o bound",
+      "question": "What stops a crash-looping component?"
+    },
+    {
+      "heuristic": "H13",
+      "severity": "high",
+      "finding": "spawned actor 'worker' declares no supervised_by \u2014 corrigibility is not inherited",
+      "evidence": "'supervisor' supervises 'worker', but the child names no supervisor",
+      "question": "Do spawned actors inherit the shutdown/oversight path of their spawner?"
+    },
+    {
+      "heuristic": "H3b",
+      "severity": "medium",
+      "finding": "1 message(s) assert idempotent_receiver but name no durable dedup mechanism",
+      "evidence": "ShutdownWorker",
+      "question": "What durable mechanism enforces the declared idempotency (unique constraint, dedup store)?"
+    },
+    {
+      "heuristic": "H14",
+      "severity": "low",
+      "finding": "no 'dependencies' section \u2014 dependency-free status undeclared",
+      "evidence": "absence is data: if the system uses no external packages, say so explicitly (\"dependencies\": [])",
+      "question": "Does this system use ANY external packages/libraries? If not, declare an empty list explicitly."
+    }
+  ],
+  "sbom": {
+    "spec": "declared top-level dependencies (CRA Annex I Part II(1) seed; regenerate from shipped artifacts for release)",
+    "component_count": 0,
+    "components": []
+  }
+}

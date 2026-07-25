@@ -1,0 +1,113 @@
+{
+ "source": "worked-example/payment-worker",
+ "architecture": "actor",
+ "actors": [
+  {
+   "name": "worker",
+   "responsibility": "process payment orders",
+   "enumerable": true,
+   "reproducible": true,
+   "ports": [
+    {
+     "name": "orders",
+     "direction": "in"
+    },
+    {
+     "name": "receipts",
+     "direction": "out"
+    }
+   ]
+  },
+  {
+   "name": "supervisor",
+   "responsibility": "restart crashed workers",
+   "enumerable": true,
+   "reproducible": true,
+   "supervises": [
+    "worker"
+   ],
+   "ports": [
+    {
+     "name": "worker_events",
+     "direction": "in"
+    },
+    {
+     "name": "worker_commands",
+     "direction": "out"
+    }
+   ]
+  }
+ ],
+ "messages": [
+  {
+   "name": "ChargePayment",
+   "from": "worker",
+   "to": "payment_gateway",
+   "delivery_semantics": "at-most-once",
+   "expects_ack": false
+  },
+  {
+   "name": "SubmitOrder",
+   "from": "external",
+   "to": "worker",
+   "delivery_semantics": "at-most-once",
+   "expects_ack": false
+  },
+  {
+   "name": "ShutdownWorker",
+   "from": "supervisor",
+   "to": "worker",
+   "delivery_semantics": "at-least-once",
+   "idempotent_receiver": true,
+   "expects_ack": true
+  }
+ ],
+ "state_machines": [
+  {
+   "actor": "worker",
+   "states": [
+    "idle",
+    "processing"
+   ],
+   "transitions": [
+    {
+     "state": "idle",
+     "event": "SubmitOrder",
+     "actions": [
+      "begin_charge"
+     ],
+     "next": "processing"
+    },
+    {
+     "state": "processing",
+     "event": "charge_done",
+     "actions": [
+      "emit_receipt"
+     ],
+     "next": "idle"
+    },
+    {
+     "state": "processing",
+     "event": "ShutdownWorker",
+     "actions": [
+      "abort_charge"
+     ],
+     "next": "idle"
+    }
+   ]
+  }
+ ],
+ "guarantees": [
+  {
+   "claim": "no double charge",
+   "mechanism": "worker keeps a flag and skips repeat orders",
+   "enforcement": "worker itself"
+  }
+ ],
+ "failure_model": [
+  {
+   "failure": "component-crash",
+   "response": "supervisor restarts worker"
+  }
+ ]
+}

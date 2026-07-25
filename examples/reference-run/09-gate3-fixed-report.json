@@ -1,0 +1,13 @@
+{
+  "target": "code/payment-worker-fixed.py",
+  "gate": "CODE (Gate-3, adapter)",
+  "summary": {
+    "engine": "mini-ast (bandit unavailable)",
+    "blocking": 0,
+    "high": 0,
+    "medium": 0,
+    "low": 0,
+    "verdict": "SOUND \u2014 no blocking/high code findings"
+  },
+  "findings": []
+}

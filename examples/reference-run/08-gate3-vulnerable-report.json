@@ -1,0 +1,64 @@
+{
+  "target": "code/payment-worker-vulnerable.py",
+  "gate": "CODE (Gate-3, adapter)",
+  "summary": {
+    "engine": "mini-ast (bandit unavailable)",
+    "blocking": 2,
+    "high": 1,
+    "medium": 2,
+    "low": 0,
+    "verdict": "BLOCK \u2014 fix blocking code findings before delivery"
+  },
+  "findings": [
+    {
+      "tool": "mini-ast",
+      "rule": "C301",
+      "file": "code/payment-worker-vulnerable.py",
+      "line": 28,
+      "tool_severity": "high",
+      "confidence": "high",
+      "message": "shell invocation with non-literal command \u2014 OS command-injection risk (via os.system)",
+      "gate_severity": "blocking"
+    },
+    {
+      "tool": "mini-ast",
+      "rule": "C301",
+      "file": "code/payment-worker-vulnerable.py",
+      "line": 71,
+      "tool_severity": "high",
+      "confidence": "high",
+      "message": "static command \u2014 unsafe shell invocation, no demonstrated injection (via subprocess.call)",
+      "gate_severity": "blocking"
+    },
+    {
+      "tool": "mini-ast",
+      "rule": "C303",
+      "file": "code/payment-worker-vulnerable.py",
+      "line": 58,
+      "tool_severity": "high",
+      "confidence": "medium",
+      "message": "pickle.loads on untrusted data",
+      "gate_severity": "high"
+    },
+    {
+      "tool": "mini-ast",
+      "rule": "C402",
+      "file": "code/payment-worker-vulnerable.py",
+      "line": 50,
+      "tool_severity": "medium",
+      "confidence": "high",
+      "message": "bare except: swallows all exceptions incl. shutdown signals",
+      "gate_severity": "medium"
+    },
+    {
+      "tool": "mini-ast",
+      "rule": "C403",
+      "file": "code/payment-worker-vulnerable.py",
+      "line": 66,
+      "tool_severity": "medium",
+      "confidence": "medium",
+      "message": "while True without break \u2014 unbounded CPU spin (H5c echo at code level)",
+      "gate_severity": "medium"
+    }
+  ]
+}

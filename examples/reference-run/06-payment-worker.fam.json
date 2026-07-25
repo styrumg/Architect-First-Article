@@ -1,0 +1,311 @@
+{
+ "derived_from": {
+  "sim_file": "04-sim-passing.json",
+  "sim_schema_version": "0.11",
+  "sim_revision": "passing"
+ },
+ "actors": [
+  {
+   "name": "worker",
+   "behavior_block": "T",
+   "ports": [
+    {
+     "name": "orders",
+     "direction": "in",
+     "domain": "discrete",
+     "trace": "SIM actors[worker].ports[orders]"
+    },
+    {
+     "name": "receipts",
+     "direction": "out",
+     "domain": "discrete",
+     "trace": "SIM actors[worker].ports[receipts]"
+    }
+   ],
+   "states": [
+    "idle",
+    "processing",
+    "stopped"
+   ],
+   "events": [
+    "SubmitOrder",
+    "charge_done",
+    "ShutdownWorker"
+   ],
+   "transitions": [
+    {
+     "state": "idle",
+     "event": "SubmitOrder",
+     "actions": [
+      "begin_charge"
+     ],
+     "next": "processing",
+     "trace": "SIM sm[worker] t0"
+    },
+    {
+     "state": "idle",
+     "event": "charge_done",
+     "actions": [
+      "ignore"
+     ],
+     "next": "idle",
+     "trace": "SIM sm[worker] t1"
+    },
+    {
+     "state": "idle",
+     "event": "ShutdownWorker",
+     "actions": [
+      "stop"
+     ],
+     "next": "stopped",
+     "trace": "SIM sm[worker] shutdown"
+    },
+    {
+     "state": "processing",
+     "event": "SubmitOrder",
+     "actions": [
+      "dedupe_or_queue"
+     ],
+     "next": "processing",
+     "trace": "SIM guarantees[no double charge]"
+    },
+    {
+     "state": "processing",
+     "event": "charge_done",
+     "actions": [
+      "emit_receipt"
+     ],
+     "next": "idle",
+     "timeout": true,
+     "trace": "SIM sm[worker] t2"
+    },
+    {
+     "state": "processing",
+     "event": "ShutdownWorker",
+     "actions": [
+      "drain_up_to_5s",
+      "on_timeout_park_charge",
+      "enter_stopped"
+     ],
+     "next": "stopped",
+     "timeout": true,
+     "trace": "SIM shutdown policy; decision-memory drain-timeout policy",
+     "resolves_pending_work": true,
+     "timeout_s": 5
+    },
+    {
+     "state": "stopped",
+     "event": "SubmitOrder",
+     "actions": [
+      "reject"
+     ],
+     "next": "stopped",
+     "trace": "SIM sm[worker] stopped"
+    },
+    {
+     "state": "stopped",
+     "event": "charge_done",
+     "actions": [
+      "ignore"
+     ],
+     "next": "stopped",
+     "trace": "SIM sm[worker] stopped"
+    },
+    {
+     "state": "stopped",
+     "event": "ShutdownWorker",
+     "actions": [
+      "ack_duplicate"
+     ],
+     "next": "stopped",
+     "trace": "SIM sm[worker] stopped"
+    },
+    {
+     "state": "idle",
+     "event": "<unexpected>",
+     "actions": [
+      "log_and_ignore"
+     ],
+     "next": "idle",
+     "unexpected": true
+    },
+    {
+     "state": "processing",
+     "event": "<unexpected>",
+     "actions": [
+      "log_and_ignore"
+     ],
+     "next": "processing",
+     "unexpected": true
+    },
+    {
+     "state": "stopped",
+     "event": "<unexpected>",
+     "actions": [
+      "log_and_ignore"
+     ],
+     "next": "stopped",
+     "unexpected": true
+    }
+   ],
+   "guards": [
+    {
+     "claim": "no double charge",
+     "guard": "gateway-enforced idempotency key",
+     "layer": "resource",
+     "code_location": "payment_gateway.idempotency_key (documented contract)",
+     "trace": "SIM guarantees[no double charge]"
+    }
+   ],
+   "traceability": [
+    "SIM actors[worker]",
+    "SIM state_machines[worker]",
+    "SIM guarantees[0]"
+   ],
+   "handlers": {
+    "SubmitOrder": "on_submit_order",
+    "ShutdownWorker": "on_shutdown",
+    "charge_done": "on_charge_done"
+   },
+   "terminal_states": [
+    "stopped"
+   ]
+  },
+  {
+   "name": "supervisor",
+   "behavior_block": "T",
+   "ports": [
+    {
+     "name": "worker_events",
+     "direction": "in",
+     "domain": "discrete",
+     "trace": "SIM actors[supervisor].ports[worker_events]"
+    },
+    {
+     "name": "worker_commands",
+     "direction": "out",
+     "domain": "discrete",
+     "trace": "SIM actors[supervisor].ports[worker_commands]"
+    }
+   ],
+   "states": [
+    "monitoring"
+   ],
+   "events": [
+    "worker_crashed",
+    "worker_report",
+    "shutdown"
+   ],
+   "transitions": [
+    {
+     "state": "monitoring",
+     "event": "worker_crashed",
+     "actions": [
+      "bounded_restart"
+     ],
+     "next": "monitoring",
+     "guard": "restart_count<5 per 60s window; on 5th, escalate_to_operator",
+     "trace": "SIM failure_model[restart-loop]"
+    },
+    {
+     "state": "monitoring",
+     "event": "worker_report",
+     "actions": [
+      "log_report"
+     ],
+     "next": "monitoring",
+     "trace": "SIM actors[supervisor]"
+    },
+    {
+     "state": "monitoring",
+     "event": "shutdown",
+     "actions": [
+      "stop_all"
+     ],
+     "next": "monitoring",
+     "timeout": true,
+     "trace": "SIM messages[ShutdownWorker]"
+    },
+    {
+     "state": "monitoring",
+     "event": "<unexpected>",
+     "actions": [
+      "log_and_ignore"
+     ],
+     "next": "monitoring",
+     "unexpected": true
+    }
+   ],
+   "guards": [
+    {
+     "claim": "bounded recovery",
+     "guard": "restart cap 5/min then escalate",
+     "layer": "enforcement",
+     "code_location": "supervisor.restart_limiter",
+     "trace": "SIM failure_model[restart-loop]"
+    }
+   ],
+   "traceability": [
+    "SIM actors[supervisor]",
+    "SIM failure_model[component-crash]",
+    "SIM failure_model[restart-loop]"
+   ],
+   "handlers": {
+    "worker_crashed": "on_worker_crashed",
+    "shutdown": "on_shutdown",
+    "worker_report": "on_report"
+   }
+  },
+  {
+   "name": "payment_gateway",
+   "behavior_block": "T",
+   "ports": [
+    {
+     "name": "charge_requests",
+     "direction": "in",
+     "domain": "discrete",
+     "trace": "SIM actors[payment_gateway].ports[charge_requests]"
+    },
+    {
+     "name": "charge_results",
+     "direction": "out",
+     "domain": "discrete",
+     "trace": "SIM actors[payment_gateway].ports[charge_results]"
+    }
+   ],
+   "states": [
+    "ready"
+   ],
+   "events": [
+    "ChargePayment"
+   ],
+   "transitions": [
+    {
+     "state": "ready",
+     "event": "ChargePayment",
+     "actions": [
+      "authorize_and_settle"
+     ],
+     "next": "ready",
+     "trace": "SIM messages[ChargePayment]"
+    },
+    {
+     "state": "ready",
+     "event": "<unexpected>",
+     "actions": [
+      "reject"
+     ],
+     "next": "ready",
+     "unexpected": true
+    }
+   ],
+   "handlers": {
+    "ChargePayment": "on_charge"
+   },
+   "traceability": [
+    "SIM actors[payment_gateway]",
+    "SIM messages[ChargePayment]"
+   ]
+  }
+ ]
+}

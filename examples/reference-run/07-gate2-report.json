@@ -1,0 +1,133 @@
+{
+  "source": "worked-example/payment-worker",
+  "gate": "FAM (F1-F6)",
+  "summary": {
+    "blocking": 0,
+    "high": 0,
+    "medium": 0,
+    "low": 0,
+    "strengths": 17,
+    "verdict": "SOUND \u2014 blueprint coherent; proceed to code"
+  },
+  "findings": [
+    {
+      "severity": "ok",
+      "heuristic": "F3",
+      "finding": "lowering integrity: 3 actor(s) refined, none invented, none dropped",
+      "evidence": "SIM actors == FAM actors",
+      "question": "verified strength \u2014 keep"
+    },
+    {
+      "severity": "ok",
+      "heuristic": "F3",
+      "finding": "actor 'worker' traceable to SIM",
+      "evidence": "3 citation(s)",
+      "question": "verified strength \u2014 keep"
+    },
+    {
+      "severity": "ok",
+      "heuristic": "F2",
+      "finding": "actor 'worker' block T matches properties (enumerable=True, reproducible=True)",
+      "evidence": "block choice follows properties",
+      "question": "verified strength \u2014 keep"
+    },
+    {
+      "severity": "ok",
+      "heuristic": "F1",
+      "finding": "actor 'worker' table is complete: 9 named (state,event) pairs plus 3 unexpected-event fallback(s)",
+      "evidence": "every (state,event) pair has a defined outcome",
+      "question": "verified strength \u2014 keep"
+    },
+    {
+      "severity": "ok",
+      "heuristic": "F4",
+      "finding": "actor 'worker': FAM ports match SIM ports (in=['orders'] out=['receipts'])",
+      "evidence": "interface preserved across lowering",
+      "question": "verified strength \u2014 keep"
+    },
+    {
+      "severity": "ok",
+      "heuristic": "F5",
+      "finding": "actor 'worker': 1 guard(s) carry code locations",
+      "evidence": "guards are placed, not wished",
+      "question": "verified strength \u2014 keep"
+    },
+    {
+      "severity": "ok",
+      "heuristic": "F6",
+      "finding": "actor 'worker': handler named for each of 2 incoming message(s)",
+      "evidence": "code-mirror rule satisfied",
+      "question": "verified strength \u2014 keep"
+    },
+    {
+      "severity": "ok",
+      "heuristic": "F3",
+      "finding": "actor 'supervisor' traceable to SIM",
+      "evidence": "3 citation(s)",
+      "question": "verified strength \u2014 keep"
+    },
+    {
+      "severity": "ok",
+      "heuristic": "F2",
+      "finding": "actor 'supervisor' block T matches properties (enumerable=True, reproducible=True)",
+      "evidence": "block choice follows properties",
+      "question": "verified strength \u2014 keep"
+    },
+    {
+      "severity": "ok",
+      "heuristic": "F1",
+      "finding": "actor 'supervisor' table is complete: 3 named (state,event) pairs plus 1 unexpected-event fallback(s)",
+      "evidence": "every (state,event) pair has a defined outcome",
+      "question": "verified strength \u2014 keep"
+    },
+    {
+      "severity": "ok",
+      "heuristic": "F4",
+      "finding": "actor 'supervisor': FAM ports match SIM ports (in=['worker_events'] out=['worker_commands'])",
+      "evidence": "interface preserved across lowering",
+      "question": "verified strength \u2014 keep"
+    },
+    {
+      "severity": "ok",
+      "heuristic": "F5",
+      "finding": "actor 'supervisor': 1 guard(s) carry code locations",
+      "evidence": "guards are placed, not wished",
+      "question": "verified strength \u2014 keep"
+    },
+    {
+      "severity": "ok",
+      "heuristic": "F3",
+      "finding": "actor 'payment_gateway' traceable to SIM",
+      "evidence": "2 citation(s)",
+      "question": "verified strength \u2014 keep"
+    },
+    {
+      "severity": "ok",
+      "heuristic": "F2",
+      "finding": "actor 'payment_gateway' block T matches properties (enumerable=True, reproducible=True)",
+      "evidence": "block choice follows properties",
+      "question": "verified strength \u2014 keep"
+    },
+    {
+      "severity": "ok",
+      "heuristic": "F1",
+      "finding": "actor 'payment_gateway' table is complete: 1 named (state,event) pairs plus 1 unexpected-event fallback(s)",
+      "evidence": "every (state,event) pair has a defined outcome",
+      "question": "verified strength \u2014 keep"
+    },
+    {
+      "severity": "ok",
+      "heuristic": "F4",
+      "finding": "actor 'payment_gateway': FAM ports match SIM ports (in=['charge_requests'] out=['charge_results'])",
+      "evidence": "interface preserved across lowering",
+      "question": "verified strength \u2014 keep"
+    },
+    {
+      "severity": "ok",
+      "heuristic": "F6",
+      "finding": "actor 'payment_gateway': handler named for each of 1 incoming message(s)",
+      "evidence": "code-mirror rule satisfied",
+      "question": "verified strength \u2014 keep"
+    }
+  ]
+}

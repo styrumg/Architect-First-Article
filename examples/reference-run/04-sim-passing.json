@@ -1,0 +1,238 @@
+{
+ "source": "worked-example/payment-worker",
+ "architecture": "actor",
+ "actors": [
+  {
+   "name": "worker",
+   "responsibility": "process payment orders",
+   "enumerable": true,
+   "reproducible": true,
+   "supervised_by": "supervisor",
+   "ports": [
+    {
+     "name": "orders",
+     "direction": "in"
+    },
+    {
+     "name": "receipts",
+     "direction": "out"
+    }
+   ]
+  },
+  {
+   "name": "supervisor",
+   "responsibility": "restart crashed workers, bounded at 5/min then escalate",
+   "enumerable": true,
+   "reproducible": true,
+   "supervises": [
+    "worker"
+   ],
+   "ports": [
+    {
+     "name": "worker_events",
+     "direction": "in"
+    },
+    {
+     "name": "worker_commands",
+     "direction": "out"
+    }
+   ]
+  },
+  {
+   "name": "payment_gateway",
+   "responsibility": "external charge service",
+   "enumerable": true,
+   "reproducible": true,
+   "ports": [
+    {
+     "name": "charge_requests",
+     "direction": "in"
+    },
+    {
+     "name": "charge_results",
+     "direction": "out"
+    }
+   ]
+  }
+ ],
+ "messages": [
+  {
+   "name": "SubmitOrder",
+   "from": "external",
+   "to": "worker",
+   "delivery_semantics": "at-least-once",
+   "idempotent_receiver": true,
+   "expects_ack": true,
+   "dedup_mechanism": "durable unique order ID in the worker's order store"
+  },
+  {
+   "name": "ChargePayment",
+   "from": "worker",
+   "to": "payment_gateway",
+   "delivery_semantics": "at-least-once",
+   "idempotent_receiver": true,
+   "expects_ack": true,
+   "dedup_mechanism": "stable order ID propagated as the payment gateway's idempotency key"
+  },
+  {
+   "name": "ShutdownWorker",
+   "from": "supervisor",
+   "to": "worker",
+   "delivery_semantics": "at-least-once",
+   "idempotent_receiver": true,
+   "expects_ack": true,
+   "dedup_mechanism": "monotonic shutdown state; repeated shutdown commands return the same acknowledgement"
+  }
+ ],
+ "state_machines": [
+  {
+   "actor": "worker",
+   "states": [
+    "idle",
+    "processing",
+    "stopped"
+   ],
+   "transitions": [
+    {
+     "state": "idle",
+     "event": "SubmitOrder",
+     "actions": [
+      "begin_charge"
+     ],
+     "next": "processing"
+    },
+    {
+     "state": "idle",
+     "event": "charge_done",
+     "actions": [
+      "ignore"
+     ],
+     "next": "idle"
+    },
+    {
+     "state": "idle",
+     "event": "ShutdownWorker",
+     "actions": [
+      "stop"
+     ],
+     "next": "stopped"
+    },
+    {
+     "state": "processing",
+     "event": "SubmitOrder",
+     "actions": [
+      "dedupe_or_queue"
+     ],
+     "next": "processing"
+    },
+    {
+     "state": "processing",
+     "event": "charge_done",
+     "actions": [
+      "emit_receipt"
+     ],
+     "next": "idle",
+     "timeout": true
+    },
+    {
+     "state": "processing",
+     "event": "ShutdownWorker",
+     "actions": [
+      "drain_up_to_5s",
+      "on_timeout_park_charge",
+      "enter_stopped"
+     ],
+     "next": "stopped",
+     "timeout": true,
+     "resolves_pending_work": true,
+     "timeout_s": 5
+    },
+    {
+     "state": "stopped",
+     "event": "SubmitOrder",
+     "actions": [
+      "reject"
+     ],
+     "next": "stopped"
+    },
+    {
+     "state": "stopped",
+     "event": "charge_done",
+     "actions": [
+      "ignore"
+     ],
+     "next": "stopped"
+    },
+    {
+     "state": "stopped",
+     "event": "ShutdownWorker",
+     "actions": [
+      "ack_duplicate"
+     ],
+     "next": "stopped"
+    },
+    {
+     "state": "idle",
+     "event": "<unexpected>",
+     "actions": [
+      "log_and_ignore"
+     ],
+     "next": "idle",
+     "unexpected": true
+    },
+    {
+     "state": "processing",
+     "event": "<unexpected>",
+     "actions": [
+      "log_and_ignore"
+     ],
+     "next": "processing",
+     "unexpected": true
+    },
+    {
+     "state": "stopped",
+     "event": "<unexpected>",
+     "actions": [
+      "log_and_ignore"
+     ],
+     "next": "stopped",
+     "unexpected": true
+    }
+   ]
+  }
+ ],
+ "guarantees": [
+  {
+   "claim": "no double charge",
+   "mechanism": "gateway-enforced idempotency key, with durable local order state",
+   "enforcement": {
+    "layer": "resource",
+    "component": "payment gateway"
+   }
+  }
+ ],
+ "failure_model": [
+  {
+   "failure": "message-loss",
+   "response": "at-least-once redelivery + idempotent receivers; all messages expects_ack"
+  },
+  {
+   "failure": "component-crash",
+   "response": "supervisor restarts worker"
+  },
+  {
+   "failure": "restart-loop",
+   "response": "supervisor caps restarts at 5/min, then escalates to operator"
+  }
+ ],
+ "dependencies": [
+  {
+   "name": "payment_gateway_client",
+   "version": "2.4.1",
+   "purpose": "charge requests",
+   "used_in_safety_path": true,
+   "source": "vendor"
+  }
+ ],
+ "ambiguities": []
+}
