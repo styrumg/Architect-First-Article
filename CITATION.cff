@@ -8,6 +8,7 @@ authors:
 date-released: 2026-07-25
 version: "1.0"
 url: "https://github.com/styrumg/Architect-First-Article"
+doi: 10.5281/zenodo.21544417
 license: CC-BY-4.0
 abstract: >-
   AI coding agents produce code faster than they can say what they are

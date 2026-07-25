@@ -1,5 +1,7 @@
 # Tell Your Coding Agent to Work as an Architect First
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21544417.svg)](https://doi.org/10.5281/zenodo.21544417)
+
 **Let it declare intent, let it show the design, let both pass the gates — then, and only then, let it code.**
 
 A position paper on making AI coding assistants produce inspectable intermediate representations — intent and design — and checking them with small, deterministic, opinion-free programs *before* any code is written.
