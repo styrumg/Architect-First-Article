@@ -1,7 +1,5 @@
 # Tell Your Coding Agent to Work as an Architect First
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21544417.svg)](https://doi.org/10.5281/zenodo.21544417)
-
 **Let it declare intent, let it show the design, let both pass the gates — then, and only then, let it code.**
 
 A position paper on making AI coding assistants produce inspectable intermediate representations — intent and design — and checking them with small, deterministic, opinion-free programs *before* any code is written.
@@ -21,7 +19,7 @@ prose spec
   → blueprint: typed messages, state machines, invariants (design)
   → SECOND boring checker validates it (Gate 2)
         ↑____ blocking findings go back ____↓
-  → code that traceably implements the blueprint
+  → code that mirrors the blueprint one-to-one
   → existing code scanners check the code (Gate 3 — they already exist)
   → every decision logged to the project diary
 ```
@@ -30,13 +28,10 @@ Code-level checking is mature (SAST tools exist for every ecosystem). Checking a
 
 ## What's in this repo
 
-| Path | What it is |
+| File | What it is |
 |------|------------|
-| `Tell-Your-Coding-Agent-to-Work-as-an-Architect-First.pdf` | The full paper — **Preprint v1.0** (30 pp), with related work and references |
+| `Tell-Your-Coding-Agent-to-Work-as-an-Architect-First.pdf` | The full paper (20 pp) |
 | `Architect-First-2pager.pdf` | The two-page summary — the whole argument in plain language |
-| `examples/reference-run/` | A worked example: a payment worker taken through all three gates (thin requirements → blocked SIM → revised SIM → traceable FAM → vulnerable code blocked → fixed code passing) |
-| `CITATION.cff` | Machine-readable citation metadata |
-| `CHANGELOG.md` | Revision history |
 
 New here? Read the two-pager first; the full paper is the detailed version of the same argument.
 
@@ -69,4 +64,4 @@ The paper ends with an explicit limits section: what the gates cannot see, where
 
 ## License
 
-The paper is released under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). The worked-example artifacts in `examples/` are released under the same license. The full SIM/FAM schemas and gate implementations are held back until the cold-test validation runs (see the paper, Section 10) — see `CHANGELOG.md` and the release notes for scope.
+The paper is released under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
