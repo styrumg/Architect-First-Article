@@ -36,7 +36,7 @@ Code-level checking is mature (SAST tools exist for every ecosystem). Checking a
 | `CITATION.cff` | Machine-readable citation metadata |
 | `CHANGELOG.md` | Revision history |
 
-New here? Read the two-pager first; the full paper is the detailed version of the same argument. The first public release is tagged **`v1.0`**.
+New here? Read the two-pager first; the full paper is the detailed version of the same argument.
 
 ## Status and honest limits
 
