@@ -1,34 +1,70 @@
-# Worked example: a payment worker through the three gates
+# Tell Your Coding Agent to Work as an Architect First
 
-A complete, staged pass through the pipeline described in the paper, using a
-small three-actor system (payment `worker`, its `supervisor`, and a
-`payment_gateway`). The full SIM/FAM schemas and the curated knowledgebase are
-intentionally held back until cold-test validation (see the paper, Section 10);
-this example exists to show the pipeline *runs* and *catches* things.
+**Let it declare intent, let it show the design, let both pass the gates — then, and only then, let it code.**
 
-## The story, in order
+A position paper on making AI coding assistants produce inspectable intermediate representations — intent and design — and checking them with small, deterministic, opinion-free programs *before* any code is written.
 
-| # | File | What happens |
-|---|------|--------------|
-| 0 | `00-requirements.md` | The thin prose ticket — happy path clear, failure vague. |
-| 1 | `01-sim-initial.json` | The agent's first SIM draft: fire-and-forget `ChargePayment`, weak dedup, no restart bound. |
-| 2 | `02-gate1-initial-report.json` | **Gate 1 BLOCK** (H3a blocking: payment command at-most-once with no ack) + high findings (H4 restart bound, H13 supervision). |
-| 3 | `03-decision-memory.jsonl` | Loop Zero / review: each gap resolved and recorded (delivery semantics, restart cap, shutdown drain, gateway-enforced dedup). |
-| 4 | `04-sim-passing.json` | Revised SIM: ack'd at-least-once with idempotent receivers **and** a named dedup mechanism, gateway-enforced idempotency, bounded restart, `supervised_by`, dependencies declared. |
-| 5 | `05-gate1-passing-report.json` | **Gate 1 SOUND** (0 blocking, 0 high; one medium H14 note requiring an explicit compensating-control decision for the safety-path dependency (answered in `03-decision-memory.jsonl`)). |
-| 6 | `06-payment-worker.fam.json` | The FAM lowered from the passing SIM — same states/events, element-level `trace`, guards with code locations, `derived_from` → `04-sim-passing.json`. |
-| 7 | `07-gate2-report.json` | **Gate 2 SOUND** — all six check families report (F1 completeness, F2 block/property, F3 lowering integrity + traceability, F4 port match, F5 guards located, F6 handlers named). |
-| 8 | `code/payment-worker-vulnerable.py` → `08-gate3-vulnerable-report.json` | A full FAM implementation (same handlers, restart limiter, gateway-side idempotency adapter, durable order-ID dedup, terminal `stopped` shutdown state with a declared drain-timeout policy) with deliberate **code-level** defects → **Gate 3 BLOCK** (2 blocking shell invocations, pickle, bare `except`, CPU spin). |
-| 9 | `code/payment-worker-fixed.py` → `09-gate3-fixed-report.json` | The same design with the defects removed → **Gate 3 SOUND** (0 findings). |
+## The idea in 30 seconds
 
-## The point
+Before writing code, the assistant fills in a short **questionnaire**: what parts the system has, how they talk to each other, what happens when something crashes, what it is *not sure about*. Then a small, boring, reliable program — **not another AI** — checks the answers against a checklist of mistakes that real systems have made in production. Missing or fishy answer → fix the plan first, then write code. A second AI judging the first can be sweet-talked; a smoke detector cannot.
 
-Each gate catches what the others can't. Gate 1 blocks the fire-and-forget
-payment before any design exists. Gate 2 verifies the design's tables are total
-and traceable to the approved intent. Gate 3 shows that an *approved design can
-still produce bad code* — the vulnerable and fixed files implement the **same**
-FAM; only the emission differs. The agent proposes; the gates dispose; the
-decision memory remembers why.
+## The pipeline
 
-The two SIM files and the two code files are deliberately two rounds of the
-same artifacts: that is the loop working, not four different systems.
+```
+prose spec
+  → thin spec? AI QUESTIONS YOU FIRST — and declines rather than guesses
+  → AI DECLARES the questionnaire (intent)
+  → deterministic CHECKER reviews it (Gate 1)
+        ↑____ blocking findings go back to the AI ____↓
+  → blueprint: typed messages, state machines, invariants (design)
+  → SECOND boring checker validates it (Gate 2)
+        ↑____ blocking findings go back ____↓
+  → code that traceably implements the blueprint
+  → existing code scanners check the code (Gate 3 — they already exist)
+  → every decision logged to the project diary
+```
+
+Code-level checking is mature (SAST tools exist for every ecosystem). Checking at the *intent* and *design* levels today is a meeting. The paper argues that's the actual gap — and builds the two missing gates.
+
+## What's in this repo
+
+| Path | What it is |
+|------|------------|
+| `Tell-Your-Coding-Agent-to-Work-as-an-Architect-First.pdf` | The full paper — **Preprint v1.0** (30 pp), with related work and references |
+| `Architect-First-2pager.pdf` | The two-page summary — the whole argument in plain language |
+| `examples/reference-run/` | A worked example: a payment worker taken through all three gates (thin requirements → blocked SIM → revised SIM → traceable FAM → vulnerable code blocked → fixed code passing) |
+| `CITATION.cff` | Machine-readable citation metadata |
+| `CHANGELOG.md` | Revision history |
+
+New here? Read the two-pager first; the full paper is the detailed version of the same argument.
+
+## Status and honest limits
+
+**Claimed (engineering):** the assembly — questions first, declared intent, two deterministic gates, existing code scanners as the third, diary — is coherent, buildable, and built. A reference run shows the loop can improve a design in three rounds.
+
+**Not claimed (science):** that it *reliably* improves software. That requires a blind A/B test: same AI, same real issues, with and without the gates — including whether the questionnaire tells the truth about the code, and whether the gates cry wolf often enough to get disabled. The experiment is designed to be able to fail.
+
+The paper ends with an explicit limits section: what the gates cannot see, where false positives will come from, and which system types fit poorly.
+
+## Discussing and contributing
+
+- **Bugs in the argument** (wrong claims, broken logic, missing prior art): open an issue.
+- **Prior art**: if you know of earlier work on machine-checkable intent/design representations for AI-generated code, that's the most valuable issue you can file.
+- **Trying the gates on your own agent**: also welcome — report what they catch and, especially, what they get wrong.
+
+## Citation
+
+```bibtex
+@misc{rumega2026architectfirst,
+  author = {Rumega, Stanislav},
+  title  = {Tell Your Coding Agent to Work as an Architect First:
+            Let it declare intent, let it show the design,
+            let both pass the gates — then, and only then, let it code},
+  year   = {2026},
+  howpublished = {\url{https://github.com/styrumg/Architect-First-Article}}
+}
+```
+
+## License
+
+The paper is released under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). The worked-example artifacts in `examples/` are released under the same license. The full SIM/FAM schemas and gate implementations are held back until the cold-test validation runs (see the paper, Section 10) — see `CHANGELOG.md` and the release notes for scope.
