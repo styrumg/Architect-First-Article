@@ -1,0 +1,23 @@
+cff-version: 1.2.0
+message: "If you use this work, please cite it as below."
+type: article
+title: "Tell Your Coding Agent to Work as an Architect First: Let it declare intent, let it show the design, let both pass the gates — then, and only then, let it code"
+authors:
+  - family-names: Rumega
+    given-names: Stanislav
+date-released: 2026-07-25
+version: "1.0"
+url: "https://github.com/styrumg/Architect-First-Article"
+license: CC-BY-4.0
+abstract: >-
+  AI coding agents produce code faster than they can say what they are
+  building. This paper proposes that the missing discipline is not better
+  generation but staged, checkable artifacts: the agent first declares a
+  structured intent (a System Intent Model), then derives a machine-readable
+  design (a Formal Architecture Model), and only then writes code — with a
+  small deterministic gate reviewing each representation before the next is
+  produced. The argument is framed as feedback control: sensors may be
+  probabilistic, but the control law may not, and the loop that improves the
+  rules must itself be governed. Presented as an engineering hypothesis —
+  coherent, buildable, and built — with empirical validation left to a blind
+  cold-test the paper describes.
