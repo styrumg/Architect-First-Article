@@ -1,6 +1,18 @@
 # Changelog
 
-Internal revision history. Public releases are tagged separately; the first
+Internal revision history.
+
+## rev 5.21 — 2026-07-26  (trunk, working toward Preprint v1.1)
+- **Determinism scoped** (de-0083): §5 "same SIM → same report" now limited to
+  deterministic checks; §7.5 states the three properties explicitly —
+  deterministic policy and replayable decision hold, fresh recheck does not
+  when a probabilistic sensor participates. Blocking authority stays with the
+  policy over a frozen, hashed evidence bundle.
+- **Related Work + References** — added MemoHarness (arXiv:2607.14159) and
+  AIDE² (Weco AI) as complementary plant-side harness-learning work; §8.3
+  cross-reference to AIDE² as RSI Level-1 evidence (Level-2 ignition not achieved).
+
+ Public releases are tagged separately; the first
 public release is **v1.0**, built from internal **rev 5.20**.
 
 ## rev 5.20 — 2026-07-25  (= public v1.0)
