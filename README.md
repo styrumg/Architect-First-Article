@@ -34,7 +34,7 @@ Code-level checking is mature (SAST tools exist for every ecosystem). Checking a
 
 | Path | What it is |
 |------|------------|
-| `Tell-Your-Coding-Agent-to-Work-as-an-Architect-First.pdf` | The full paper — **Preprint v1.0** (30 pp), with related work and references |
+| `Tell-Your-Coding-Agent-to-Work-as-an-Architect-First.pdf` | The latest full paper with related work and references |
 | `Architect-First-2pager.pdf` | The two-page summary — the whole argument in plain language |
 | `examples/reference-run/` | A worked example: a payment worker taken through all three gates (thin requirements → blocked SIM → revised SIM → traceable FAM → vulnerable code blocked → fixed code passing) |
 | `CITATION.cff` | Machine-readable citation metadata |
