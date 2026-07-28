@@ -3,6 +3,14 @@
 Internal revision history.
 
 ## rev 5.21 — 2026-07-26  (trunk, working toward Preprint v1.1)
+- **Privilege-complete authority boundary** (§8.3): role separation is not
+  evidence independence, and evidence independence is not authority separation.
+  The trusted boundary must cover the whole privilege path — CI config, runner
+  image, credentials, merge rules, evidence store, artifact registry — with its
+  own credential domain. The plant may propose a policy change, never admit one.
+- **Schema conformance ≠ semantic validity** (§3): a well-formed SIM/FAM can
+  still describe the wrong system; the schema makes claims explicit and
+  addressable, the gates and independently resolved evidence make them admissible.
 - **Determinism scoped** (de-0083): §5 "same SIM → same report" now limited to
   deterministic checks; §7.5 states the three properties explicitly —
   deterministic policy and replayable decision hold, fresh recheck does not
