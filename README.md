@@ -39,8 +39,10 @@ Code-level checking is mature (SAST tools exist for every ecosystem). Checking a
 | `examples/reference-run/` | A worked example: a payment worker taken through all three gates (thin requirements → blocked SIM → revised SIM → traceable FAM → vulnerable code blocked → fixed code passing) |
 | `CITATION.cff` | Machine-readable citation metadata |
 | `CHANGELOG.md` | Revision history |
+| `slides/` | A concise presentation deck summarizing the Architect First argument, available as editable PowerPoint and PDF |
 
 New here? Read the two-pager first; the full paper is the detailed version of the same argument.
+Preparing a talk or internal discussion? Start with the presentation deck in `slides/`.
 
 ## Status and honest limits
 
